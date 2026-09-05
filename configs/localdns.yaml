@@ -1,0 +1,58 @@
+listen:
+  address: 127.0.0.1
+  port: 53
+
+http:
+  address: 127.0.0.1
+  port: 8080
+
+redis:
+  address: 127.0.0.1:6379
+  password: ""
+  db: 0
+  timeout: 500ms
+
+cache:
+  max_entries: 20000
+  min_ttl: 1s
+  max_ttl: 24h
+  stale_ttl: 30s
+
+upstreams:
+  servers:
+    - https://cloudflare-dns.com/dns-query
+    - https://dns.google/dns-query
+  timeout: 3s
+  attempts: 2
+  transport: doh
+  doh_server_name: dns.google
+  dot_server_name: dns.google
+  socks5_proxy: 127.0.0.1:9050
+
+acl:
+  allow:
+    - 127.0.0.0/8
+    - ::1/128
+
+rate_limit:
+  requests_per_second: 200
+  burst: 400
+  per_client_requests_per_second: 50
+  per_client_burst: 100
+
+shutdown_timeout: 10s
+
+logging:
+  level: info
+  format: json
+
+records:
+  router.local:
+    A:
+      - 192.168.1.1
+  nas.local:
+    A:
+      - 192.168.1.10
+  dev.local:
+    A:
+      - 127.0.0.1
