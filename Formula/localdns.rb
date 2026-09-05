@@ -1,7 +1,7 @@
 class Localdns < Formula
   desc "Local DNS caching resolver with Redis"
   homepage "https://github.com/bithubakkount/dns"
-  url "https://github.com/bithubakkount/dns/archive/refs/tags/v0.3.2.tar.gz"
+  url "https://github.com/bithubakkount/dns/archive/refs/tags/v0.3.3.tar.gz"
   sha256 "REPLACE_AFTER_TAGGING"
   license "MIT"
 
