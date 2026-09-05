@@ -5,7 +5,7 @@ VERSION?=0.3.2
 
 build:
 	mkdir -p bin
-	CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -trimpath -ldflags="-s -w -X github.com/yourname/localdns/internal/app.Version=$(VERSION)" -o bin/$(APP)-darwin-arm64 ./cmd/localdns
+	CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -trimpath -ldflags="-s -w -X github.com/bithubakkount/dns/internal/app.Version=$(VERSION)" -o bin/$(APP)-darwin-arm64 ./cmd/localdns
 
 test:
 	go test ./...
@@ -29,8 +29,8 @@ clean:
 
 release:
 	mkdir -p dist
-	CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -trimpath -ldflags="-s -w -X github.com/yourname/localdns/internal/app.Version=$(VERSION)" -o dist/$(APP)-$(VERSION)-darwin-arm64 ./cmd/localdns
-	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -trimpath -ldflags="-s -w -X github.com/yourname/localdns/internal/app.Version=$(VERSION)" -o dist/$(APP)-$(VERSION)-darwin-amd64 ./cmd/localdns
-	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -trimpath -ldflags="-s -w -X github.com/yourname/localdns/internal/app.Version=$(VERSION)" -o dist/$(APP)-$(VERSION)-linux-arm64 ./cmd/localdns
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="-s -w -X github.com/yourname/localdns/internal/app.Version=$(VERSION)" -o dist/$(APP)-$(VERSION)-linux-amd64 ./cmd/localdns
+	CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -trimpath -ldflags="-s -w -X github.com/bithubakkount/dns/internal/app.Version=$(VERSION)" -o dist/$(APP)-$(VERSION)-darwin-arm64 ./cmd/localdns
+	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -trimpath -ldflags="-s -w -X github.com/bithubakkount/dns/internal/app.Version=$(VERSION)" -o dist/$(APP)-$(VERSION)-darwin-amd64 ./cmd/localdns
+	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -trimpath -ldflags="-s -w -X github.com/bithubakkount/dns/internal/app.Version=$(VERSION)" -o dist/$(APP)-$(VERSION)-linux-arm64 ./cmd/localdns
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="-s -w -X github.com/bithubakkount/dns/internal/app.Version=$(VERSION)" -o dist/$(APP)-$(VERSION)-linux-amd64 ./cmd/localdns
 	shasum -a 256 dist/*

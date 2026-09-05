@@ -1,4 +1,4 @@
-module github.com/yourname/localdns
+module github.com/bithubakkount/dns
 
 go 1.24.0
 

@@ -2,14 +2,14 @@ class Localdns < Formula
   desc "Local DNS caching resolver with Redis"
   homepage "https://github.com/bithubakkount/dns"
   url "https://github.com/bithubakkount/dns/archive/refs/tags/v0.3.2.tar.gz"
-  sha256 "5f5adb84f8967149c4792dacad1ee1da873b772f32f5d206b17e655cccd10269"
+  sha256 "REPLACE_AFTER_TAGGING"
   license "MIT"
 
   depends_on "go" => :build
   depends_on "redis"
 
   def install
-    system "go", "build", *std_go_args(ldflags: "-s -w -X github.com/bithubakkount/dns/internal/app.Version=0.3.2"), "./cmd/localdns"
+    system "go", "build", *std_go_args(ldflags: "-s -w -X github.com/bithubakkount/dns/internal/app.Version=0.3.3"), "./cmd/localdns"
 
     bin.install "localdns"
 
@@ -29,7 +29,7 @@ class Localdns < Formula
   end
 
   test do
-    assert_equal "0.3.2", shell_output("#{bin}/localdns --version").strip
+    assert_equal "0.3.3", shell_output("#{bin}/localdns --version").strip
     system bin/"localdns", "--config", etc/"localdns/localdns.yaml", "--check-config"
   end
 end

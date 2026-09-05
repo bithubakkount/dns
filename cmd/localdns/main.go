@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/yourname/localdns/internal/app"
+	"github.com/bithubakkount/dns/internal/app"
 )
 
 func main() {
