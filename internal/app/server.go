@@ -24,7 +24,7 @@ import (
 	"golang.org/x/time/rate"
 )
 
-var Version = "0.3.3"
+var Version = "0.3.4"
 
 type Server struct {
 	cfg                                Config

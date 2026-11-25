@@ -132,7 +132,7 @@ The default shutdown timeout is 10 seconds and can be changed with `shutdown_tim
 - Added singleflight protection to stale-cache background refreshes.
 - Hardened bounded L1 cache initialization.
 
-## 0.3.3
+## 0.3.4
 
 - Upstream failover now uses a per-upstream timeout, so a hanging server no longer blocks fallback.
 - TCP upstream transport and truncated-response retry now really use TCP.

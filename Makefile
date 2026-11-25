@@ -1,5 +1,5 @@
 APP=localdns
-VERSION?=0.3.3
+VERSION?=0.3.4
 
 .PHONY: build test race fmt vet run check clean release
 
