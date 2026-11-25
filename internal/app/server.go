@@ -24,7 +24,7 @@ import (
 	"golang.org/x/time/rate"
 )
 
-var Version = "0.3.3"
+var Version = "0.3.4"
 
 type Server struct {
 	cfg                                Config
@@ -321,20 +321,25 @@ func (s *Server) exchange(ctx context.Context, msg *dns.Msg) (*dns.Msg, error) {
 		timeout = 2 * time.Second
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, timeout)
-	defer cancel()
-
 	for attempt := 0; attempt < max(1, cfg.Upstreams.Attempts); attempt++ {
 		for _, upstream := range cfg.Upstreams.Servers {
-			resp, err := s.exchangeUpstream(ctx, upstream, msg)
+			if ctx.Err() != nil {
+				return nil, ctx.Err()
+			}
+			// Per-upstream timeout so one hanging server cannot consume the
+			// whole budget and prevent failover to the next one.
+			uctx, cancel := context.WithTimeout(ctx, timeout)
+			resp, err := s.exchangeUpstream(uctx, upstream, msg)
 			if err != nil {
+				cancel()
 				continue
 			}
 			if resp != nil && resp.Truncated && strings.EqualFold(cfg.Upstreams.Transport, "udp") {
-				if tcpResp, tcpErr := s.exchangeDNSOverTCP(ctx, upstream, msg); tcpErr == nil {
+				if tcpResp, tcpErr := s.exchangeDNSOverTCP(uctx, strings.TrimPrefix(upstream, "udp://"), msg); tcpErr == nil {
 					resp = tcpResp
 				}
 			}
+			cancel()
 			if resp != nil {
 				return resp, nil
 			}
@@ -381,7 +386,9 @@ func (s *Server) exchangeDNSOverUDP(ctx context.Context, upstream string, msg *d
 }
 
 func (s *Server) exchangeDNSOverTCP(ctx context.Context, upstream string, msg *dns.Msg) (*dns.Msg, error) {
-	in, err := dns.ExchangeContext(ctx, msg, upstream)
+	// dns.ExchangeContext uses UDP; an explicit TCP client is required here.
+	client := &dns.Client{Net: "tcp"}
+	in, _, err := client.ExchangeContext(ctx, msg, upstream)
 	return in, err
 }
 
@@ -477,7 +484,7 @@ func (s *Server) localRecord(r *dns.Msg) (*dns.Msg, bool) {
 				out.Answer = append(out.Answer, &dns.AAAA{Hdr: h, AAAA: ip})
 			}
 		case dns.TypeCNAME:
-			out.Answer = append(out.Answer, &dns.CNAME{Hdr: h, Target: v})
+			out.Answer = append(out.Answer, &dns.CNAME{Hdr: h, Target: dns.Fqdn(v)})
 		case dns.TypeTXT:
 			out.Answer = append(out.Answer, &dns.TXT{Hdr: h, Txt: []string{v}})
 		}
@@ -552,6 +559,12 @@ func (s *Server) dohClient() *http.Client {
 			proxyURL, err := url.Parse("socks5h://" + cfg.Upstreams.SOCKS5Proxy)
 			if err == nil {
 				transport.Proxy = http.ProxyURL(proxyURL)
+			} else {
+				// Fail closed: never silently fall back to a direct
+				// connection when a (Tor) proxy was requested.
+				s.logger.Error("invalid socks5_proxy; DoH queries will fail", "error", err)
+				perr := err
+				transport.Proxy = func(*http.Request) (*url.URL, error) { return nil, perr }
 			}
 		}
 		s.dohHTTP = &http.Client{

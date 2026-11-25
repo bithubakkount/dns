@@ -125,6 +125,11 @@ func LoadConfig(path string) (Config, error) {
 	if len(c.Upstreams.Servers) == 0 {
 		c.Upstreams.Servers = []string{"1.1.1.1:53", "8.8.8.8:53"}
 	}
+	// Fail closed: an empty ACL must not turn the resolver into an open one
+	// if the listen address is later changed away from loopback.
+	if len(c.ACL.Allow) == 0 {
+		c.ACL.Allow = []string{"127.0.0.0/8", "::1/128"}
+	}
 	if c.RateLimit.RequestsPerSecond == 0 {
 		c.RateLimit.RequestsPerSecond = 200
 	}

@@ -1,7 +1,7 @@
 class Localdns < Formula
   desc "Local DNS caching resolver with Redis"
   homepage "https://github.com/bithubakkount/dns"
-  url "https://github.com/bithubakkount/dns/archive/refs/tags/v0.3.3.tar.gz"
+  url "https://github.com/bithubakkount/dns/archive/refs/tags/v0.3.4.tar.gz"
   sha256 "REPLACE_AFTER_TAGGING"
   license "MIT"
 
@@ -9,12 +9,11 @@ class Localdns < Formula
   depends_on "redis"
 
   def install
-    system "go", "build", *std_go_args(ldflags: "-s -w -X github.com/bithubakkount/dns/internal/app.Version=0.3.3"), "./cmd/localdns"
+    system "go", "build", *std_go_args(ldflags: "-s -w -X github.com/bithubakkount/dns/internal/app.Version=0.3.4"), "./cmd/localdns"
 
-    bin.install "localdns"
-
-    (etc/"localdns").mkpath
-    cp "configs/localdns.yaml", etc/"localdns/localdns.yaml"
+    # std_go_args already installs bin/localdns. Do not run bin.install on
+    # "localdns": that path is a prebuilt binary committed in the repo.
+    (etc/"localdns").install "configs/localdns.yaml" unless (etc/"localdns/localdns.yaml").exist?
   end
 
   service do
@@ -29,7 +28,7 @@ class Localdns < Formula
   end
 
   test do
-    assert_equal "0.3.3", shell_output("#{bin}/localdns --version").strip
+    assert_equal "0.3.4", shell_output("#{bin}/localdns --version").strip
     system bin/"localdns", "--config", etc/"localdns/localdns.yaml", "--check-config"
   end
 end

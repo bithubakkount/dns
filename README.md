@@ -132,6 +132,11 @@ The default shutdown timeout is 10 seconds and can be changed with `shutdown_tim
 - Added singleflight protection to stale-cache background refreshes.
 - Hardened bounded L1 cache initialization.
 
-## 0.3.2
+## 0.3.4
+
+- Upstream failover now uses a per-upstream timeout, so a hanging server no longer blocks fallback.
+- TCP upstream transport and truncated-response retry now really use TCP.
+- Empty `acl.allow` now defaults to loopback only instead of allowing everyone.
+- An invalid `socks5_proxy` now fails closed instead of connecting directly.
 
 Startup now binds UDP DNS, TCP DNS, and the HTTP health/metrics listener before advertising readiness. If any listener fails to bind, previously opened listeners are closed and the process exits without reporting a successful start. DNS listeners use miekg/dns socket activation via `ActivateAndServe`, preserving graceful shutdown behavior.
