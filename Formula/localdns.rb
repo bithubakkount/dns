@@ -11,10 +11,9 @@ class Localdns < Formula
   def install
     system "go", "build", *std_go_args(ldflags: "-s -w -X github.com/bithubakkount/dns/internal/app.Version=0.3.3"), "./cmd/localdns"
 
-    bin.install "localdns"
-
-    (etc/"localdns").mkpath
-    cp "configs/localdns.yaml", etc/"localdns/localdns.yaml"
+    # std_go_args already installs bin/localdns. Do not run bin.install on
+    # "localdns": that path is a prebuilt binary committed in the repo.
+    (etc/"localdns").install "configs/localdns.yaml" unless (etc/"localdns/localdns.yaml").exist?
   end
 
   service do
